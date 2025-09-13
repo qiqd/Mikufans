@@ -1,5 +1,6 @@
 import 'package:mikufans/component/anime_card.dart';
 import 'package:flutter/material.dart';
+import 'package:mikufans/entities/anime.dart';
 
 class Love extends StatefulWidget {
   const Love({super.key});
@@ -24,7 +25,7 @@ class _LoveState extends State<Love> {
           ),
           itemCount: 12,
           itemBuilder: (context, index) {
-            return AnimeCard();
+            return Text("data");
           },
         ),
       ),
