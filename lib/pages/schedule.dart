@@ -2,6 +2,7 @@ import 'package:mikufans/api/bangumi.dart';
 import 'package:mikufans/component/anime_card.dart';
 import 'package:mikufans/entities/anime.dart';
 import 'package:mikufans/entities/weekly.dart';
+import 'package:mikufans/pages/anime_player.dart';
 import 'package:mikufans/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -80,8 +81,22 @@ class _WeeklyState extends State<Schedule>
                 itemCount: weeklyData?.items?.length ?? 0,
                 itemBuilder: (context, itemIndex) {
                   final item = weeklyData?.items?[itemIndex];
-                  return AnimeCard(
-                    Anime(image: item!.image, nameCn: item.nameCn),
+                  return InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AnimePlayer(item.id!, item.nameCn!),
+                      ),
+                    ),
+
+                    child: AnimeCard(
+                      Anime(
+                        image: item!.image,
+                        name: item.name,
+                        nameCn: item.nameCn,
+                      ),
+                    ),
                   );
                 },
               ),

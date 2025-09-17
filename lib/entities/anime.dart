@@ -1,16 +1,22 @@
 // @JsonSerializable()
 class Anime {
+  //动画id
   int? id;
+  //剧集总数
   int? eps;
 
-  // @JsonKey(name: 'meta_tags')
+  ///元标签
   List<String>? metaTags;
+  //放送时间
   String? date;
+  //图片
   String image;
+  //简介
   String? summary;
+  //名称(日文)
   String? name;
 
-  // @JsonKey(name: 'name_cn')
+  //名称(中文)
   String? nameCn;
 
   Anime({
@@ -30,7 +36,9 @@ class Anime {
       eps: json['eps'] as int?,
       metaTags: (json['meta_tags'] as List?)?.map((e) => e as String).toList(),
       date: json['date'] as String?,
-      image: json['image'] as String,
+      image:
+          (json['image'] ?? (json["images"] as Map<String, dynamic>)["medium"])
+              as String,
       summary: (json['summary'] as String?)?.replaceAll(RegExp(r'\s+'), ''),
       name: json['name'] as String?,
       nameCn: json['name_cn'] as String?,

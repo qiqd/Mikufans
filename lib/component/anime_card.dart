@@ -57,7 +57,9 @@ class AnimeCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  _anime.nameCn ?? '',
+                  (_anime.nameCn?.isNotEmpty == true)
+                      ? _anime.nameCn!
+                      : _anime.name!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -71,14 +73,15 @@ class AnimeCard extends StatelessWidget {
 }
 
 class AnimeLoveCard extends StatefulWidget {
-  const AnimeLoveCard({super.key});
+  final Anime _anime;
+  const AnimeLoveCard(this._anime, {super.key});
 
   @override
   State<AnimeLoveCard> createState() => _AnimeLoveCardState();
 }
 
 class _AnimeLoveCardState extends State<AnimeLoveCard> {
-  bool isLove = true;
+  bool isLove = false;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -109,21 +112,20 @@ class _AnimeLoveCardState extends State<AnimeLoveCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "JOJO的奇妙冒险",
+                  (widget._anime.nameCn?.isNotEmpty == true)
+                      ? widget._anime.nameCn!
+                      : widget._anime.name!,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "更新至20集/每周4点更新",
+                  widget._anime.date ?? "暂无数据",
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 Text(
-                  "导演: 宫崎骏,张三",
+                  widget._anime.summary ?? "暂无数据",
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
-                Text(
-                  "演员: 张三,李四,王五",
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                ),
+
                 Visibility(
                   visible: isLove,
                   child: Text(
@@ -135,6 +137,42 @@ class _AnimeLoveCardState extends State<AnimeLoveCard> {
                   "最近观看时间: 2023-01-01",
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isLove = !isLove;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                      Set<WidgetState> states,
+                    ) {
+                      if (isLove) {
+                        return GlobalTheme.primaryColor;
+                      } else {
+                        return Colors.transparent;
+                      }
+                    }),
+                    foregroundColor: WidgetStateProperty.resolveWith<Color>((
+                      Set<WidgetState> states,
+                    ) {
+                      if (isLove) {
+                        return Colors.transparent;
+                      } else {
+                        return GlobalTheme.primaryColor;
+                      }
+                    }),
+                    side: WidgetStateProperty.resolveWith<BorderSide?>((
+                      Set<WidgetState> states,
+                    ) {
+                      if (!isLove) {
+                        return BorderSide(color: GlobalTheme.primaryColor);
+                      }
+                      return null;
+                    }),
+                  ),
+                  child: Text(isLove ? "已追番" : "追番"),
+                ),
               ],
             ),
           ),
@@ -143,3 +181,4 @@ class _AnimeLoveCardState extends State<AnimeLoveCard> {
     );
   }
 }
+// ... existing code ...

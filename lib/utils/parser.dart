@@ -1,4 +1,6 @@
 // 使用html包的解析器
+import 'dart:developer';
+
 import 'package:mikufans/entities/person.dart';
 import 'dart:convert';
 import 'package:html/parser.dart' as html_parser;
@@ -111,7 +113,7 @@ class PersonHtmlParser {
         final text = script.text;
         if (text.contains('window.PAGE_DATA')) {
           // 使用正则表达式提取JSON部分
-          print("");
+          log("");
 
           final RegExp pattern = RegExp(
             r'window\.PAGE_DATA\s*=\s*(\{.*?\})',
@@ -119,10 +121,10 @@ class PersonHtmlParser {
             multiLine: true,
           );
           final match = pattern.firstMatch(text);
-          print("match:$match");
+          log("match:$match");
           if (match != null && match.groupCount >= 1) {
             final jsonString = match.group(1)!;
-            print("jsonString:$jsonString");
+            log("jsonString:$jsonString");
             return null;
             // 解析JSON
             return json.decode(jsonString) as Map<String, dynamic>;
@@ -132,7 +134,7 @@ class PersonHtmlParser {
 
       return null;
     } catch (e) {
-      print('解析PAGE_DATA时出错: $e');
+      log('解析PAGE_DATA时出错: $e');
       return null;
     }
   }
@@ -167,7 +169,7 @@ class PersonHtmlParser {
 
       return '';
     } catch (e) {
-      print('提取文本时出错: $e');
+      log('提取文本时出错: $e');
       return '';
     }
   }
@@ -194,7 +196,7 @@ class PersonHtmlParser {
       }
       return null;
     } catch (e) {
-      print('解析日期时出错: $e');
+      log('解析日期时出错: $e');
       return null;
     }
   }
@@ -282,7 +284,7 @@ class PersonHtmlParser {
         description: description,
       );
     } catch (e) {
-      print('从HTML元素中提取基本信息时出错: $e');
+      log('从HTML元素中提取基本信息时出错: $e');
       return null;
     }
   }

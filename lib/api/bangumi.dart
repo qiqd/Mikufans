@@ -52,4 +52,20 @@ class Bangumi {
       return [];
     }
   }
+
+  static Future<Anime?> getSubject(int subjectId) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$_baseUrl/v0/subjects/$subjectId"),
+      );
+      if (response.statusCode != 200) {
+        throw Exception("请求失败: ${response.statusCode}");
+      }
+      final jsonResponse = json.decode(response.body);
+      return Anime.fromJson(jsonResponse);
+    } catch (error) {
+      log("请求失败: $error");
+      return null;
+    }
+  }
 }

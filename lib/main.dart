@@ -1,13 +1,13 @@
 import 'package:mikufans/pages/index.dart';
 import 'package:mikufans/pages/love.dart';
 import 'package:mikufans/pages/me.dart';
-import 'package:mikufans/pages/player.dart';
 import 'package:mikufans/pages/schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:mikufans/theme/theme.dart';
 
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 
@@ -56,7 +56,6 @@ class _MyAppState extends State<MyApp> {
           },
         ),
       ),
-      routes: {'/player': (context) => const Player()},
     );
   }
 }

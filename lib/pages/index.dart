@@ -1,6 +1,7 @@
 import 'package:mikufans/api/bangumi.dart';
 import 'package:mikufans/component/anime_card.dart';
 import 'package:mikufans/entities/anime.dart';
+import 'package:mikufans/pages/anime_player.dart';
 import 'package:mikufans/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -62,7 +63,15 @@ class _IndexState extends State<Index> with AutomaticKeepAliveClientMixin {
                   itemBuilder: (context, index) {
                     return InkWell(
                       child: AnimeCard(_animes[index]),
-                      onTap: () => Navigator.pushNamed(context, '/player'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AnimePlayer(
+                            _animes[index].id!,
+                            _animes[index].nameCn!,
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),
