@@ -1,7 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mikufans/api/bangumi.dart';
-import 'package:mikufans/component/anime_card.dart';
 import 'package:mikufans/component/anime_detail_card.dart';
 import 'package:mikufans/entities/anime.dart';
 import 'package:mikufans/entities/detail_item.dart';
@@ -9,7 +8,6 @@ import 'package:mikufans/entities/search_item.dart';
 import 'package:mikufans/theme/theme.dart';
 import 'package:mikufans/utils/aafun_parser.dart';
 import 'package:video_player/video_player.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mikufans/entities/history.dart';
 
@@ -36,7 +34,7 @@ class _AnimePlayerState extends State<AnimePlayer>
   bool _isInitialized = true;
   bool _isFollowed = false; // 追番状态
   late Box<History> _historyBox; // Hive数据库
-  static bool _adaptersRegistered = false; // 添加一个静态变量来跟踪适配器注册状态
+  static final bool _adaptersRegistered = false; // 添加一个静态变量来跟踪适配器注册状态
   void _initPlayer() async {
     _controller = VideoPlayerController.networkUrl(Uri.parse(_currentVideoUrl));
     _controller?.initialize().then((_) {
@@ -127,15 +125,6 @@ class _AnimePlayerState extends State<AnimePlayer>
 
   // 初始化Hive
   void _initHive() async {
-    // 先初始化Hive框架
-    await Hive.initFlutter();
-
-    // 注册适配器 - 只在第一次运行时注册
-    if (!_adaptersRegistered) {
-      Hive.registerAdapter(HistoryAdapter());
-      _adaptersRegistered = true;
-    }
-
     // 然后打开Box
     _historyBox = await Hive.openBox<History>('history');
 

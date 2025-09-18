@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mikufans/entities/anime.dart';
-import 'package:mikufans/theme/theme.dart';
 
 class AnimeDetailCard extends StatelessWidget {
   final Anime anime;

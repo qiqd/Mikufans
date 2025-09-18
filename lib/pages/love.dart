@@ -18,13 +18,16 @@ class _LoveState extends State<Love> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
     _initHive();
+    super.didChangeDependencies();
   }
 
   // 初始化Hive并加载追番数据
   void _initHive() async {
-    await Hive.initFlutter();
-    Hive.registerAdapter(HistoryAdapter());
     _historyBox = await Hive.openBox<History>('history');
     _loadFollowedAnimes();
   }

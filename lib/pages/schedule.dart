@@ -70,7 +70,8 @@ class _WeeklyState extends State<Schedule>
             // 获取当前星期的数据
             final weeklyData = _weeklyList.isEmpty ? null : _weeklyList[index];
 
-            return Center(
+            return Visibility(
+              replacement: Center(child: CircularProgressIndicator()),
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3, // 3列
