@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:mikufans/api/bangumi.dart';
@@ -8,13 +9,14 @@ import 'package:mikufans/entities/search_item.dart';
 import 'package:mikufans/theme/theme.dart';
 import 'package:mikufans/utils/aafun_parser.dart';
 import 'package:video_player/video_player.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mikufans/entities/history.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AnimePlayer extends StatefulWidget {
   final int id;
   final String title;
-  const AnimePlayer(this.id, this.title, {super.key});
+  final bool formHistory;
+  const AnimePlayer(this.id, this.title, {super.key, this.formHistory = false});
 
   @override
   State<AnimePlayer> createState() => _AnimePlayerState();
@@ -23,18 +25,18 @@ class AnimePlayer extends StatefulWidget {
 class _AnimePlayerState extends State<AnimePlayer>
     with TickerProviderStateMixin {
   Anime? _anime;
+  SharedPreferences? instance;
   VideoPlayerController? _controller;
+  late String _currentVideoUrl;
   late TabController _tabController;
   TabController? _subTabController;
   List<List<DetailItem>> _detail = [];
-  late String _currentVideoUrl;
   ChewieController? _chewieController;
   int _currentEpisode = 0;
   final int _currentLine = 0;
   bool _isInitialized = true;
   bool _isFollowed = false; // 追番状态
-  late Box<History> _historyBox; // Hive数据库
-  static final bool _adaptersRegistered = false; // 添加一个静态变量来跟踪适配器注册状态
+  List<History> historyList = [];
   void _initPlayer() async {
     _controller = VideoPlayerController.networkUrl(Uri.parse(_currentVideoUrl));
     _controller?.initialize().then((_) {
@@ -114,39 +116,18 @@ class _AnimePlayerState extends State<AnimePlayer>
     _initPlayer();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _initHive(); // 初始化Hive
-    _initAnimeInfo();
-    _initAnimeEpisode();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  // 初始化Hive
-  void _initHive() async {
-    // 然后打开Box
-    _historyBox = await Hive.openBox<History>('history');
-
-    // 从数据库中加载追番状态
-    _loadFollowStatus();
-  }
-
   // 加载追番状态
-  void _loadFollowStatus() async {
-    if (_anime != null) {
-      final historyId = _anime!.id.toString();
-      final existingHistoryKeys = _historyBox.keys
-          .where((key) => key.toString().startsWith(historyId))
-          .toList();
-
-      if (existingHistoryKeys.isNotEmpty) {
-        final history = _historyBox.get(existingHistoryKeys.first);
-        if (history != null) {
-          setState(() {
-            _isFollowed = history.isFollow;
-          });
-        }
+  void _loadLocalHistory() async {
+    instance = await SharedPreferences.getInstance();
+    var history = instance?.get("loclalHistory") as String?;
+    if (history != null) {
+      historyList = json.decode(history) as List<History>;
+    }
+    for (var item in historyList) {
+      if (item.id == widget.id.toString()) {
+        setState(() {
+          _isFollowed = item.isFollow;
+        });
       }
     }
   }
@@ -164,38 +145,53 @@ class _AnimePlayerState extends State<AnimePlayer>
   // 保存或更新历史记录
   void _saveHistory() async {
     if (_anime == null) return;
-
     final historyId = _anime!.id.toString();
-
-    // 查找所有与当前动漫ID相关的记录
-    final existingHistoryKeys = _historyBox.keys
-        .where((key) => key.toString().contains(historyId))
-        .toList();
-
-    // 创建新的历史记录
-    final history = History(
-      id: historyId,
-      isFollow: _isFollowed,
-      name: _anime!.nameCn ?? _anime!.name ?? "未知番剧",
-      image: _anime!.image,
-      time: _controller?.value.position.toString() ?? "0",
-      dateTime: DateTime.now(),
-    );
-
-    if (existingHistoryKeys.isNotEmpty) {
-      // 如果存在，更新第一条记录
-      await _historyBox.put(existingHistoryKeys.first, history);
+    var first = historyList
+        .map((item) {
+          if (item.id == historyId) {
+            return item;
+          }
+        })
+        .toList()
+        .first;
+    if (first != null) {
+      first.dateTime = DateTime.now();
     } else {
-      // 如果不存在，添加新记录
-      await _historyBox.add(history);
+      // 创建新的历史记录
+      first = History(
+        id: historyId,
+        isFollow: _isFollowed,
+        name: _anime!.nameCn ?? _anime!.name ?? "未知番剧",
+        image: _anime!.image,
+        time: _controller?.value.position ?? Duration(seconds: 0, minutes: 0),
+        dateTime: DateTime.now(),
+      );
     }
+
+    historyList.add(first);
+    // 将 historyList 序列化为 JSON 字符串并保存
+    List<Map<String, dynamic>> jsonList = historyList
+        .map((history) => history.toJson())
+        .toList();
+    String jsonString = json.encode(jsonList);
+    await instance?.setString("localHistory", jsonString);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.formHistory) {
+      _loadLocalHistory();
+    }
+    _initAnimeInfo();
+    _initAnimeEpisode();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     // 页面销毁时保存历史记录
     _saveHistory();
-
     _subTabController?.dispose();
     _tabController.dispose();
     _controller?.dispose();

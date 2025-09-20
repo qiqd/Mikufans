@@ -3,54 +3,23 @@
 part of 'history.dart';
 
 // **************************************************************************
-// TypeAdapterGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
-class HistoryAdapter extends TypeAdapter<History> {
-  @override
-  final int typeId = 0;
+History _$HistoryFromJson(Map<String, dynamic> json) => History(
+  id: json['id'] as String,
+  isFollow: json['isFollow'] as bool,
+  name: json['name'] as String,
+  image: json['image'] as String,
+  time: json['time'] as Duration,
+  dateTime: DateTime.parse(json['dateTime'] as String),
+);
 
-  @override
-  History read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return History(
-      id: fields[0] as String,
-      isFollow: fields[5] as bool,
-      name: fields[1] as String,
-      image: fields[2] as String,
-      time: fields[3] as String,
-      dateTime: fields[4] as DateTime,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, History obj) {
-    writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.name)
-      ..writeByte(2)
-      ..write(obj.image)
-      ..writeByte(3)
-      ..write(obj.time)
-      ..writeByte(4)
-      ..write(obj.dateTime)
-      ..writeByte(5)
-      ..write(obj.isFollow);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HistoryAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
+Map<String, dynamic> _$HistoryToJson(History instance) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'image': instance.image,
+  'time': instance.time,
+  'dateTime': instance.dateTime.toIso8601String(),
+  'isFollow': instance.isFollow,
+};

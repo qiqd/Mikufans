@@ -1,8 +1,8 @@
-import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'history.g.dart';
 
-@HiveType(typeId: 0)
+@JsonSerializable()
 class History {
   History({
     required this.id,
@@ -12,28 +12,19 @@ class History {
     required this.time,
     required this.dateTime,
   });
-
   //动漫id
-  @HiveField(0)
-  final String id;
-
+  String id;
   //动漫名称(中文优先,如果没有日文的话)
-  @HiveField(1)
-  final String name;
-
+  String name;
   //动漫图片
-  @HiveField(2)
-  final String image;
-
+  String image;
   //视频播放时间
-  @HiveField(3)
-  final String time;
-
+  Duration time;
   //最近播放时间
-  @HiveField(4)
-  final DateTime dateTime;
-
+  DateTime dateTime;
   //该番剧是否追番
-  @HiveField(5)
   bool isFollow = false;
+  factory History.fromJson(Map<String, dynamic> json) =>
+      _$HistoryFromJson(json);
+  Map<String, dynamic> toJson() => _$HistoryToJson(this);
 }

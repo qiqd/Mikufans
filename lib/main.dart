@@ -1,5 +1,3 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mikufans/entities/history.dart';
 import 'package:mikufans/pages/index.dart';
 import 'package:mikufans/pages/love.dart';
 import 'package:mikufans/pages/me.dart';
@@ -9,14 +7,6 @@ import 'package:mikufans/theme/theme.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 初始化 Hive 框架
-  await Hive.initFlutter();
-
-  // 注册适配器 —— 只注册一次！
-  Hive.registerAdapter(HistoryAdapter());
-
-  // 打开 Box
-  await Hive.openBox<History>('history');
   runApp(MyApp());
 }
 
@@ -38,7 +28,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
-
   // 使用late关键字延迟初始化
   late final List<Widget> _pages = [
     const Index(),
